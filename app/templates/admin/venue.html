@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h1>{{ title }} </h1>
+       <nav aria-label="...">
+            <ul class="secondery-nav navbar-right">
+                <li class=""><a href="{{ url_for('main.admin_venue_add') }}">Create Venue</a></li>
+            </ul>
+       </nav>
+    <div class="container">
+        {% if venues %}
+        <table style=" " class="table table-striped">
+
+        <tr>
+            <th class="type">Name</th>
+            <th>Place</th>
+            <th>Capacity</th>
+            <th>Action</th>
+            
+        </tr>
+        
+        {% for venue in venues %}
+        <tr>
+            <td>{{ venue.name }}</td>
+            <td>{{ venue.place }}</td>
+            <td>{{ venue.capacity }}</td>
+            <td>
+                <a href="{{ url_for('main.admin_shows', venue_id=venue.id) }}" class="btn btn-info btn-xs">Shows</a>
+                <a href="" class="btn btn-warning btn-xs">Edit Venue</a>
+                <a href="" class="btn btn-danger btn-xs">Delete</a>
+            </td>
+            
+        </tr>
+        {% endfor %}
+
+        </table>
+        {% else %}
+        <p> No venue</p>
+        {% endif %}
+    </div>
+    
+{% endblock %}

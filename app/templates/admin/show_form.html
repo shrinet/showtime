@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h1>{{ formName }}</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <form action="" method="post" class="form" role="form">
+                {{ form.csrf_token }}
+                {% if form.csrf_token.errors %}
+                    <div class="warning">You have submitted an invalid CSRF token</div>
+                {% endif %}
+              <div class="form-group  required"><label class="control-label" for="name">Name</label>
+                <input class="form-control" id="name" name="name" required="" type="text" value="">
+                      
+                </div>
+              
+              <div class="form-group  required"><label class="control-label" for="price">Price</label>
+                      
+                        <input class="form-control" id="price" name="price" required="" step="any" type="number" value="">
+                      
+                </div>
+              
+              <div class="form-group  required"><label class="control-label" for="date_from">Start Date</label>
+                      
+                        <input class="form-control date" id="date_from" name="date_from" required="" type="date" value="">
+                      
+                </div>
+              
+              <div class="form-group  required"><label class="control-label" for="date_to">End Date</label>
+                      
+                        <input class="form-control date" id="date_to" name="date_to" required="" type="date" value="">
+                      
+                </div>
+                <div class="" id="shows">
+                    <div class="form-group">
+                        <label class="control-label" for="12-04-2023">12-04-2023</label>
+                        <div>
+                            <button data-date="12-04-2023" class="btn set-time" data-time='10:00'>10:00</button>
+                            <button data-date="12-04-2023" class="btn set-time" data-time='11:00'>11:00</button>
+                            <button data-date="12-04-2023" class="btn set-time" data-time='12:00'>12:00</button>
+                            <button data-date="12-04-2023" class="btn set-time" data-time='13:00'>13:00</button>
+                            <button data-date="12-04-2023" class="btn set-time" data-time='14:00'>14:00</button>
+                            <button data-date="12-04-2023" class="btn set-time" data-time='15:00'>15:00</button>
+                            <button data-date="12-04-2023" class="btn set-time" data-time='16:00'>16:00</button>
+                            <button data-date="12-04-2023" class="btn set-time" data-time='17:00'>17:00</button>
+    
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="showTime" id="showsField">
+                
+                <input class="btn btn-default" id="submit" name="submit" type="submit" value="Submit">
+              
+              </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    
+    <script>
+        $(window).ready(function() {
+            //$('.set-time').on('click', selectTime);
+            $(document).on( 'click', '.set-time', selectTime );
+            $('.date').on('change', createTime);
+            
+
+        });
+        var showTime = [];
+        var avTime = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00']
+        var startDate, endDate;
+        function selectTime(e) {
+            e.preventDefault();
+            $element = $(this)
+            sTime = $(this).attr("data-time").split(':')
+            timeObject = moment($(this).attr("data-date") ).set({"hour": sTime[0], "minute": sTime[1]})
+            showTime.push(timeObject)
+            console.log(showTime)
+            $('#showsField').val(showTime)
+        }
+
+
+        var createTime = function(e) {
+            var html = '';
+            
+            if(this.name == 'date_from'){
+                startDate = this.value;
+            }
+            if(this.name == 'date_to'){
+                endDate = this.value;
+            }
+            if (startDate != null && endDate != null){
+                showDates = enumerateDaysBetweenDates(startDate, endDate)
+                $.each(showDates, function(index, item) {
+                    //console.info(item.toLocaleDateString())
+                    //showTime.push(item)
+                    html += '<div class="form-group"><label class="control-label" for="'+item+'">'+item.toLocaleDateString()+'</label><div>'
+                        $.each(avTime, function(i,t) {
+                            html += '<button data-date="'+ item +'" class="btn set-time" data-time="'+t+'">'+t+'</button>'
+                        })
+                    
+                    html += '</div></div>'     
+                    
+                })
+                if(html != null){
+                    $("#shows").html(html);
+                }
+            }
+        }
+
+        var enumerateDaysBetweenDates = function(startDate, endDate) {
+            var dates = [];
+
+            var currDate = moment(startDate).startOf('day');
+            var lastDate = moment(endDate).startOf('day');
+
+            while(currDate.add(1, 'days').diff(lastDate) < 0) {
+                //console.log(currDate.toDate().toLocaleDateString());
+                dates.push(currDate.clone().toDate());
+            }
+
+            return dates;
+        };
+
+    </script>
+{% endblock %}

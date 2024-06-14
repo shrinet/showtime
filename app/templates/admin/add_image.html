@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+
+    <h1>{{ formName }} <small>for {{ show.name }}</small></h1>
+    <div class="row">
+        {% for image in show.images %}
+        
+            
+            <figure class="figure">
+                <img src="{{url_for('static', filename='image/'+ image.path )}}" class="figure-img img-fluid rounded" alt="{{ image.caption }}." width="200">
+                <figcaption class="figure-caption">{{ image.caption }}</figcaption>
+            </figure>
+        {% endfor %}
+    </div>
+    <div class="row">
+        {{ wtf.quick_form(form) }}
+            
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    
+    <script>
+        $(window).ready(function() {
+            //$('.set-time').on('click', selectTime);
+            $(document).on( 'click', '.set-time', selectTime );
+            $('.date').on('change', createTime);
+            
+
+        });
+        var showTime = [];
+        var avTime = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00']
+        var startDate, endDate;
+        function selectTime(e) {
+            e.preventDefault();
+            $element = $(this)
+            sTime = $(this).attr("data-time").split(':')
+            timeObject = moment($(this).attr("data-date") ).set({"hour": sTime[0], "minute": sTime[1]})
+            showTime.push(timeObject)
+            console.log(showTime)
+            $('#showsField').val(showTime)
+        }
+
+
+        var createTime = function(e) {
+            var html = '';
+            
+            if(this.name == 'date_from'){
+                startDate = this.value;
+            }
+            if(this.name == 'date_to'){
+                endDate = this.value;
+            }
+            if (startDate != null && endDate != null){
+                showDates = enumerateDaysBetweenDates(startDate, endDate)
+                $.each(showDates, function(index, item) {
+                    //console.info(item.toLocaleDateString())
+                    //showTime.push(item)
+                    html += '<div class="form-group"><label class="control-label" for="'+item+'">'+item.toLocaleDateString()+'</label><div>'
+                        $.each(avTime, function(i,t) {
+                            html += '<button data-date="'+ item +'" class="btn set-time" data-time="'+t+'">'+t+'</button>'
+                        })
+                    
+                    html += '</div></div>'     
+                    
+                })
+                if(html != null){
+                    $("#shows").html(html);
+                }
+            }
+        }
+
+        var enumerateDaysBetweenDates = function(startDate, endDate) {
+            var dates = [];
+
+            var currDate = moment(startDate).startOf('day');
+            var lastDate = moment(endDate).startOf('day');
+
+            while(currDate.add(1, 'days').diff(lastDate) < 0) {
+                //console.log(currDate.toDate().toLocaleDateString());
+                dates.push(currDate.clone().toDate());
+            }
+
+            return dates;
+        };
+
+    </script>
+    <style>
+        img {
+    width: 200px; /* You can set the dimensions to whatever you want */
+    height: 200px !important;
+    object-fit: cover;
+}
+    </style>
+{% endblock %}

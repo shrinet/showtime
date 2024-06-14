@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <table class="table table-hover">
+        <tr>
+            <td width="256px"><img src="{{ user.avatar(256) }}"></td>
+            <td>
+                <h1>{{ 'User' }}: {{ user.username }}</h1>
+                {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+                {% if user.last_seen %}
+                <p>{{ 'Last seen on' }}: {{ moment(user.last_seen).format('LLL') }}</p>
+                {% endif %}
+                
+               
+                   
+               
+            </td>
+        </tr>
+    </table>
+
+    {% if bookings %}
+        <table style=" " class="table table-striped">
+
+        <tr>
+            <th class="type">Date</th>
+            <th>Show</th>
+            <th>Seats</th>
+            <th>Action</th>
+            
+        </tr>
+        
+        {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.date }}</td>
+            <td>{{ booking.show.name }}</td>
+            <td>{{ booking.sheats }}</td>
+            <td>
+                <a href="{{ url_for('main.review', show_id=booking.show.id) }}" class="btn btn-warning btn-xs">Submit review</a>
+                
+            </td>
+            
+        </tr>
+        {% endfor %}
+
+     {% endif %}   
+    
+    
+{% endblock %}

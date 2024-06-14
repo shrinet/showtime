@@ -1,0 +1,15 @@
+
+<div class="container">
+    
+{% for i_row in range(show.venue.capacity, 0, -1) | batch(10, '&nbsp;') %}
+        <div class="d-flex justify-content-around">
+            {% for i in i_row %}
+            <div class="p-2 bd-highlight">
+                <button class="btn seletSeat {% if i in bookings %} btn-outline-secondary {% endif %}" {% if i in bookings %} disabled {% endif %} data-seat="{{ i }} ">{{ i }} </button>
+            </div>
+            {% endfor %}
+        </div>
+
+{% endfor %}
+
+</div>
